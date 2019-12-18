@@ -10,8 +10,8 @@ public class Background {
     private Vector2 position;
     private int speed;
 
-    public Background() {
-        texture = new Texture("road.png");
+    public Background(Road road) {
+        texture = road.getTexture();
         position = new Vector2(0, 0);
         speed = 400;
     }

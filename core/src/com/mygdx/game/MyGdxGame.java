@@ -23,15 +23,17 @@ public class MyGdxGame extends ApplicationAdapter {
 	float timeToSpawnCounterCar;
 	int collisionCounter;
 	Texture[] counterCarTextures;
+	Road road;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		background = new Background();
-		car = new Car();
+		road = new Road(140, 705, new Texture("road.png"));
+		background = new Background(road);
+		car = new Car(600f);
 		obstacles = new ArrayList<>();
 		counterCar = new ArrayList<>();
-		inputController = new InputController(car);
+		inputController = new InputController(car, road);
 		gameOver = false;
 		gameOverTexture = new Texture("game_over.png");
 		timeToSpawnObstacle = 3.0f;

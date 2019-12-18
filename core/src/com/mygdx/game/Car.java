@@ -12,9 +12,9 @@ public class Car {
     private Vector2 position;
     Rectangle rectangle;
 
-    public Car() {
+    public Car(float positionX) {
         texture = new Texture("car.png");
-        position = new Vector2(700, 0);
+        position = new Vector2(positionX, 0);
         rectangle = new Rectangle((int)position.x, (int)position.y, texture.getWidth(), texture.getHeight());
     }
 
