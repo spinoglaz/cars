@@ -10,12 +10,12 @@ public class InputController {
         this.car = car;
     }
 
-    public void moveCar() {
+    public void moveCar(float dt) {
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT) && car.getPositionX() > 0) {
-            car.setPosition(car.getPositionX() - 20);
+            car.setPosition(car.getPositionX() - 300 * dt);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && car.getPositionX() < 750) {
-            car.setPosition(car.getPositionX() + 20);
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) && car.getPositionX() < 650) {
+            car.setPosition(car.getPositionX() + 300 * dt);
         }
     }
 }

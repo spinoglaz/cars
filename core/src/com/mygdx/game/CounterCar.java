@@ -13,16 +13,16 @@ public class CounterCar {
     private int speed;
     Rectangle rectangle;
 
-    public CounterCar() {
-
-        texture = new Texture("CounterCar.png");
+    public CounterCar(Texture texture) {
+        this.texture = texture;
         position = new Vector2(100 + (float)Math.random() * 700, 1000);
-        speed = - 700;
+        speed = -700;
         rectangle = new Rectangle((int)position.x, (int)position.y, texture.getWidth(), texture.getHeight());
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y);
+        boolean flip = speed < 0;
+        batch.draw(texture, position.x, position.y, getWidthTexture(), getHeightTexture(), 0, 0, getWidthTexture(), getHeightTexture(), false, flip);
     }
 
     public void update(float dt) {
@@ -38,11 +38,11 @@ public class CounterCar {
         return position.y;
     }
 
-    public float getWidthTexture() {
+    public int getWidthTexture() {
         return texture.getWidth();
     }
 
-    public float getHeightTexture() {
+    public int getHeightTexture() {
         return texture.getHeight();
     }
 
