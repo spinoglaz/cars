@@ -13,7 +13,7 @@ public class Car {
     Rectangle rectangle;
 
     public Car(float positionX) {
-        texture = new Texture("car.png");
+        texture = new Texture("car1.png");
         position = new Vector2(positionX, 0);
         rectangle = new Rectangle((int)position.x, (int)position.y, texture.getWidth(), texture.getHeight());
     }

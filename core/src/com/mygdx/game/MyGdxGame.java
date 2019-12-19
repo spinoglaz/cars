@@ -15,12 +15,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	Background background;
 	Car car;
 	ArrayList<Obstacle> obstacles;
-	ArrayList<CounterCar> counterCar;
+	ArrayList<BotCar> botCar;
 	InputController inputController;
 	boolean gameOver;
 	Texture gameOverTexture;
 	float timeToSpawnObstacle;
-	float timeToSpawnCounterCar;
+	float timeToSpawnBotCar;
 	int collisionCounter;
 	Texture[] counterCarTextures;
 	Road road;
@@ -28,22 +28,26 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		road = new Road(140, 705, new Texture("road.png"));
+		road = new Road(140, 705, new Texture("road.png"), new Lane[]{
+				new Lane(174, 282, false),
+				new Lane(291, 414, false),
+				new Lane(423, 548, true),
+				new Lane(554, 670, true)});
 		background = new Background(road);
 		car = new Car(600f);
 		obstacles = new ArrayList<>();
-		counterCar = new ArrayList<>();
+		botCar = new ArrayList<>();
 		inputController = new InputController(car, road);
 		gameOver = false;
 		gameOverTexture = new Texture("game_over.png");
 		timeToSpawnObstacle = 3.0f;
-		timeToSpawnCounterCar = 1.0f;
+		timeToSpawnBotCar = 1.0f;
 		collisionCounter = 0;
 		counterCarTextures = new Texture[]{
-				new Texture("CounterCar.png"),
-				new Texture("CounterCar1.png"),
-				new Texture("CounterCar2.png"),
-				new Texture("CounterCar3.png"),
+				new Texture("car2.png"),
+				new Texture("car3.png"),
+				new Texture("car4.png"),
+				new Texture("car5.png"),
 		};
 	}
 
@@ -60,8 +64,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			for (int i = 0; i < obstacles.size() ; i++) {
 				obstacles.get(i).render(batch);
 			}
-			for (int i = 0; i < counterCar.size() ; i++) {
-				counterCar.get(i).render(batch);
+			for (int i = 0; i < botCar.size() ; i++) {
+				botCar.get(i).render(batch);
 			}
 		} else {
 			batch.draw(gameOverTexture, 0, 0);
@@ -70,29 +74,48 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void update(float dt) {
-		timeToSpawnObstacle -= dt;
-		if (timeToSpawnObstacle < 0) {
-			obstacles.add (new Obstacle());
-			timeToSpawnObstacle = (float) (1 + Math.random() * 8);
-		}
-		timeToSpawnCounterCar -=dt;
-		if(timeToSpawnCounterCar < 0) {
-			int textureIndex = ThreadLocalRandom.current().nextInt(counterCarTextures.length);;
-			counterCar.add(new CounterCar(counterCarTextures[textureIndex]));
-			timeToSpawnCounterCar = (float) (1 + Math.random() * 1);
-		}
+		spawnObstacles(dt);
+		spawnBotCars(dt);
 		background.update(dt);
 		inputController.moveCar(dt);
 		for (int i = 0; i < obstacles.size() ; i++) {
 			obstacles.get(i).update(dt);
 		}
-		for (int i = 0; i < counterCar.size() ; i++) {
-			counterCar.get(i).update(dt);
+		for (int i = 0; i < botCar.size() ; i++) {
+			botCar.get(i).update(dt);
 		}
 		car.getRectangle().setLocation((int)car.getPositionX(), (int)car.getPositionY());
 		collisionOfObstacles();
 		gameOver();
 		restart();
+	}
+
+	private void spawnObstacles(float dt) {
+		timeToSpawnObstacle -= dt;
+		if (timeToSpawnObstacle < 0) {
+			obstacles.add (new Obstacle());
+			timeToSpawnObstacle = (float) (1 + Math.random() * 8);
+		}
+	}
+
+	private void spawnBotCars(float dt) {
+		timeToSpawnBotCar -= dt;
+		if(timeToSpawnBotCar < 0) {
+			int textureIndex = ThreadLocalRandom.current().nextInt(counterCarTextures.length);
+			Texture texture = counterCarTextures[textureIndex];
+			int laneIndex = ThreadLocalRandom.current().nextInt(road.getLanes().length);
+			Lane lane = road.getLanes()[laneIndex];
+			int speed;
+			float positionY = 1000;
+			if (lane.isUpward()) {
+				speed = -200;
+			}
+			else {
+				speed = -700;
+			}
+			botCar.add(new BotCar(texture, speed, lane, positionY));
+			timeToSpawnBotCar = (float) (1 + Math.random() * 1);
+		}
 	}
 
 	public void gameOver() {
@@ -103,10 +126,10 @@ public class MyGdxGame extends ApplicationAdapter {
 				i--;
 			}
 		}
-		for (int i = 0; i < counterCar.size(); i++) {
-			if(car.getRectangle().intersects(counterCar.get(i).getRectangle())) {
+		for (int i = 0; i < botCar.size(); i++) {
+			if(car.getRectangle().intersects(botCar.get(i).getRectangle())) {
 				collisionCounter++;
-				counterCar.remove(i);
+				botCar.remove(i);
 				i--;
 			}
 		}
@@ -117,8 +140,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	public void collisionOfObstacles() {
 		for (int i = 0; i < obstacles.size(); i++) {
-			for (int j = 0; j < counterCar.size(); j++) {
-				if(obstacles.get(i).getRectangle().intersects(counterCar.get(j).getRectangle())) {
+			for (int j = 0; j < botCar.size(); j++) {
+				if(obstacles.get(i).getRectangle().intersects(botCar.get(j).getRectangle())) {
 					obstacles.remove(i);
 					i--;
 					break;

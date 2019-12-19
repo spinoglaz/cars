@@ -6,11 +6,13 @@ public class Road {
     private int leftBound;
     private int rightBound;
     private Texture texture;
+    private Lane[] lanes;
 
-    public Road(int leftBound, int rightBound, Texture texture) {
+    public Road(int leftBound, int rightBound, Texture texture, Lane[] lanes) {
         this.leftBound = leftBound;
         this.rightBound = rightBound;
         this.texture = texture;
+        this.lanes = lanes;
     }
 
     public int getLeftBound() {
@@ -23,5 +25,9 @@ public class Road {
 
     public Texture getTexture() {
         return texture;
+    }
+
+    public Lane[] getLanes() {
+        return lanes;
     }
 }
