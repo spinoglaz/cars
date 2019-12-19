@@ -4,4 +4,4 @@
 ![Screenshot](/screenshots/screenshot1.png?raw=true)
 
 # Как запустить игру
-Выполнить в корне проекта `gradlew run`
+Выполнить в корне проекта `./gradlew run`
