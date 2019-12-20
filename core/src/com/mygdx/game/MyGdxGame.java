@@ -24,6 +24,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	int collisionCounter;
 	Texture[] counterCarTextures;
 	Road road;
+	boolean pause;
 
 	@Override
 	public void create () {
@@ -38,37 +39,46 @@ public class MyGdxGame extends ApplicationAdapter {
 		obstacles = new ArrayList<>();
 		botCar = new ArrayList<>();
 		inputController = new InputController(car, road);
-		gameOver = false;
 		gameOverTexture = new Texture("game_over.png");
-		timeToSpawnObstacle = 3.0f;
-		timeToSpawnBotCar = 1.0f;
-		collisionCounter = 0;
 		counterCarTextures = new Texture[]{
 				new Texture("car2.png"),
 				new Texture("car3.png"),
 				new Texture("car4.png"),
 				new Texture("car5.png"),
 		};
+		restart();
 	}
 
 	@Override
 	public void render () {
 		float dt = Gdx.graphics.getRawDeltaTime();
-		update(dt);
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		if(!gameOver) {
-			background.render(batch);
-			car.render(batch);
-			for (int i = 0; i < obstacles.size() ; i++) {
-				obstacles.get(i).render(batch);
+		if(!pause) {
+			update(dt);
+			if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+				pause = true;
 			}
-			for (int i = 0; i < botCar.size() ; i++) {
-				botCar.get(i).render(batch);
+			if (!gameOver) {
+				background.render(batch);
+				car.render(batch);
+				for (int i = 0; i < obstacles.size(); i++) {
+					obstacles.get(i).render(batch);
+				}
+				for (int i = 0; i < botCar.size(); i++) {
+					botCar.get(i).render(batch);
+				}
+			} else {
+				batch.draw(gameOverTexture, 0, 0);
+				if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
+					restart();
+				}
 			}
 		} else {
-			batch.draw(gameOverTexture, 0, 0);
+			if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
+				pause = false;
+			}
 		}
 		batch.end();
 	}
@@ -87,7 +97,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		car.getRectangle().setLocation((int)car.getPositionX(), (int)car.getPositionY());
 		collisionOfObstacles();
 		gameOver();
-		restart();
 	}
 
 	private void spawnObstacles(float dt) {
@@ -151,11 +160,15 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	public void restart() {
-		if(gameOver) {
-			if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)){
-				create();
-			}
-		}
+		car.setPosition(600f);
+		gameOver = false;
+		timeToSpawnObstacle = 3.0f;
+		timeToSpawnBotCar = 1.0f;
+		collisionCounter = 0;
+		pause = false;
+
+		obstacles.clear();
+		botCar.clear();
 	}
 
 	@Override
