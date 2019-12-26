@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -25,6 +26,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture[] counterCarTextures;
 	Road road;
 	boolean pause;
+	Sound soundOnRoad;
+	Sound soundCrashObstacle;
+	Sound soundCrashCar;
 
 	@Override
 	public void create () {
@@ -47,6 +51,11 @@ public class MyGdxGame extends ApplicationAdapter {
 				new Texture("car5.png"),
 		};
 		restart();
+		soundOnRoad = Gdx.audio.newSound(Gdx.files.internal("road.mp3"));
+		soundCrashObstacle = Gdx.audio.newSound(Gdx.files.internal("crashObs.wav"));
+		soundCrashCar = Gdx.audio.newSound(Gdx.files.internal("crashCar.wav"));
+		long soundOnRoadId = soundOnRoad.play();
+		soundOnRoad.setLooping(soundOnRoadId, true);
 	}
 
 	@Override
@@ -56,11 +65,11 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		if(!pause) {
-			update(dt);
 			if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 				pause = true;
 			}
 			if (!gameOver) {
+				update(dt);
 				background.render(batch);
 				car.render(batch);
 				for (int i = 0; i < obstacles.size(); i++) {
@@ -130,6 +139,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void gameOver() {
 		for (int i = 0; i < obstacles.size(); i++) {
 			if(car.getRectangle().intersects(obstacles.get(i).getRectangle())) {
+				soundCrashObstacle.play(1f);
 				collisionCounter++;
 				obstacles.remove(i);
 				i--;
@@ -137,6 +147,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		for (int i = 0; i < botCar.size(); i++) {
 			if(car.getRectangle().intersects(botCar.get(i).getRectangle())) {
+				soundCrashCar.play(0.3f);
 				collisionCounter++;
 				botCar.remove(i);
 				i--;
@@ -174,5 +185,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
+		soundOnRoad.dispose();
+		soundCrashObstacle.dispose();
+		soundCrashCar.dispose();
 	}
 }
