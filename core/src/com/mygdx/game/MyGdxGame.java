@@ -15,6 +15,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Background background;
 	Car car;
+	ReserveOfLives reserveOfLives;
 	ArrayList<Obstacle> obstacles;
 	ArrayList<BotCar> botCar;
 	InputController inputController;
@@ -22,7 +23,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture gameOverTexture;
 	float timeToSpawnObstacle;
 	float timeToSpawnBotCar;
-	int collisionCounter;
+	int life;
 	Texture[] counterCarTextures;
 	Road road;
 	boolean pause;
@@ -40,6 +41,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				new Lane(554, 670, true)});
 		background = new Background(road);
 		car = new Car(600f);
+		reserveOfLives = new ReserveOfLives();
 		obstacles = new ArrayList<>();
 		botCar = new ArrayList<>();
 		inputController = new InputController(car, road);
@@ -72,6 +74,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				update(dt);
 				background.render(batch);
 				car.render(batch);
+				reserveOfLives.render(batch, life);
 				for (int i = 0; i < obstacles.size(); i++) {
 					obstacles.get(i).render(batch);
 				}
@@ -140,7 +143,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i = 0; i < obstacles.size(); i++) {
 			if(car.getRectangle().intersects(obstacles.get(i).getRectangle())) {
 				soundCrashObstacle.play(1f);
-				collisionCounter++;
+				life--;
 				obstacles.remove(i);
 				i--;
 			}
@@ -148,12 +151,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i = 0; i < botCar.size(); i++) {
 			if(car.getRectangle().intersects(botCar.get(i).getRectangle())) {
 				soundCrashCar.play(0.3f);
-				collisionCounter++;
+				life--;
 				botCar.remove(i);
 				i--;
 			}
 		}
-		if(collisionCounter==3) {
+		if(life ==0) {
 			gameOver = true;
 		}
 	}
@@ -175,7 +178,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		gameOver = false;
 		timeToSpawnObstacle = 3.0f;
 		timeToSpawnBotCar = 1.0f;
-		collisionCounter = 0;
+		life = 3;
 		pause = false;
 
 		obstacles.clear();
