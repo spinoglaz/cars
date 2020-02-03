@@ -21,6 +21,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	InputController inputController;
 	boolean gameOver;
 	Texture gameOverTexture;
+	Texture pauseTexture;
 	float timeToSpawnObstacle;
 	float timeToSpawnBotCar;
 	int life;
@@ -46,6 +47,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		botCar = new ArrayList<>();
 		inputController = new InputController(car, road);
 		gameOverTexture = new Texture("game_over.png");
+		pauseTexture = new Texture("pause.png");
 		counterCarTextures = new Texture[]{
 				new Texture("car2.png"),
 				new Texture("car3.png"),
@@ -88,6 +90,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				}
 			}
 		} else {
+			batch.draw(pauseTexture, 250, 300);
 			if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
 				pause = false;
 			}
